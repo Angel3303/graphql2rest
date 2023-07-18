@@ -326,11 +326,17 @@ const addRestEndpoint = ({ action, router }) => {
 
 /* Operation invoker, called by Express callback function created by addRestEndpoint() */
 const executeOperation = async ({ req, res, queryString, allParams, statusCode, hiddenFields, operationName }) => {
+
 	let response;
 	let isErrorResponse = false;
 	debug(`Executing "${queryString.substring(0, 100).replace(/(\r\n|\n|\r)/gm, '')}..." with parameters:`);
 	debug(pretty(allParams));
-
+	Object.entries(allParams).map(([key, value], index) => {
+		if (!isNaN(value)) {
+			allParams[key] = parseInt(value)
+		}
+	})
+	
 	try {
 		response = await funcs.executeFn({
 			query: gql(queryString),
